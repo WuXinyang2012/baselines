@@ -74,7 +74,7 @@ class RolloutWorker:
         ag[:] = self.initial_ag
 
         # generate episodes
-        obs, achieved_goals, acts, goals, successes = [], [], [], [], []
+        obs, achieved_goals, acts, goals, successes, ncon = [], [], [], [], [], []
         info_values = [np.empty((self.T, self.rollout_batch_size, self.dims['info_' + key]), np.float32) for key in self.info_keys]
         Qs = []
         for t in range(self.T):
@@ -98,12 +98,16 @@ class RolloutWorker:
             o_new = np.empty((self.rollout_batch_size, self.dims['o']))
             ag_new = np.empty((self.rollout_batch_size, self.dims['g']))
             success = np.zeros(self.rollout_batch_size)
+            ncon_ = np.empty((self.rollout_batch_size, 1))
             # compute new states and observations
             for i in range(self.rollout_batch_size):
                 try:
                     # We fully ignore the reward here because it will have to be re-computed
                     # for HER.
                     curr_o_new, _, _, info = self.envs[i].step(u[i])
+
+                    ncon_[i] = self.envs[i].env.sim.data.ncon
+
                     if 'is_success' in info:
                         success[i] = info['is_success']
                     o_new[i] = curr_o_new['observation']
@@ -127,6 +131,7 @@ class RolloutWorker:
             goals.append(self.g.copy())
             o[...] = o_new
             ag[...] = ag_new
+            ncon.append(ncon_.copy())
         obs.append(o.copy())
         achieved_goals.append(ag.copy())
         self.initial_o[:] = o
@@ -134,7 +139,8 @@ class RolloutWorker:
         episode = dict(o=obs,
                        u=acts,
                        g=goals,
-                       ag=achieved_goals)
+                       ag=achieved_goals,
+                       con=ncon)
         for key, value in zip(self.info_keys, info_values):
             episode['info_{}'.format(key)] = value
 
