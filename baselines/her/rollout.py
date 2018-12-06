@@ -75,9 +75,16 @@ class RolloutWorker:
 
         # generate episodes
         obs, achieved_goals, acts, goals, successes, ncon = [], [], [], [], [], []
+
+        # Here we are goint to add an input: the collision position. The value function: V(s, g, collision)
+
+
         info_values = [np.empty((self.T, self.rollout_batch_size, self.dims['info_' + key]), np.float32) for key in self.info_keys]
         Qs = []
         for t in range(self.T):
+
+            # The goal will be set as a fixed value, while the collision will be generated randomly.
+            # We can rename the goal variable as collision, and give it -10 reward when achieved.
             policy_output = self.policy.get_actions(
                 o, ag, self.g,
                 compute_Q=self.compute_Q,
