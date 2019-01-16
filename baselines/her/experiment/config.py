@@ -40,7 +40,7 @@ DEFAULT_PARAMS = {
     'noise_eps': 0.2,  # std of gaussian noise added to not-completely-random actions as a percentage of max_u
     # HER
     'replay_strategy': 'future',  # supported modes: future, none
-    'replay_k': 1,  # number of additional goals used for replay, only used if off_policy_data=future
+    'replay_k': 2,  # number of additional goals used for replay, only used if off_policy_data=future
     # normalization
     'norm_eps': 0.01,  # epsilon used for observation normalization
     'norm_clip': 5,  # normalized observations are cropped to this values

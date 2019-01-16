@@ -56,9 +56,9 @@ def make_sample_her_transitions(replay_strategy, replay_k, reward_fun):
         # For all the transitions in which collision happens, assign -10 reward to them instead of 0.
         if 'con' in transitions:
             for i in range(batch_size):
-                if transitions['con'][i] > 2:
-                    transitions['r'][i] = -np.float32(10)
-                    # print(np.str(transitions['con'][i])+" contacts are detected in this eposide.")
+                if transitions['con'][i] > 1:
+                    transitions['r'][i] = -np.float32(500)
+                    print(np.str(transitions['con'][i])+" contacts are detected in this eposide.")
 
             transitions = {k: transitions[k].reshape(batch_size, *transitions[k].shape[1:])
                            for k in transitions.keys()}

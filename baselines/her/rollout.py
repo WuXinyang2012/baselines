@@ -113,6 +113,7 @@ class RolloutWorker:
                     # for HER.
                     curr_o_new, _, _, info = self.envs[i].step(u[i])
 
+                    # Use the mujoco function to get contact info
                     ncon_[i] = self.envs[i].env.sim.data.ncon
 
                     if 'is_success' in info:
